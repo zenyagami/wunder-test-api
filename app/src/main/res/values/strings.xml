@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Wunder Test</string>
+    <string name="formatted_name" formatted="false">%s Engine:%s, Fuel:%d</string>
+    <string name="car_status" formatted="false">Interior:%s , Exterior: %s</string>
+    <string name="map">Map</string>
+    <string name="permissions_denied">Location Permission denied.</string>
+    <string name="map_api_key" translatable="false">x</string>
+</resources>
