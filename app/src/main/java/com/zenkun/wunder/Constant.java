@@ -9,7 +9,7 @@ public class Constant {
     //UI KEYS for the app
     public static class UI
     {
-        public static final float MAP_DEFAULT_ZOOM = 15f;
+        public static final float MAP_DEFAULT_ZOOM = 13f;
     }
 
     public static class KEY {

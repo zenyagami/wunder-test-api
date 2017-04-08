@@ -18,4 +18,8 @@ public interface ViewMap extends MvpView<PresenterViewMap> {
 
     void
     updateZoomMap(LatLngBounds.Builder builder);
+
+    void enableListeners();
+
+    void clearMap();
 }

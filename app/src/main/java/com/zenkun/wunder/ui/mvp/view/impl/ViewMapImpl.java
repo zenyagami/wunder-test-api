@@ -6,10 +6,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -40,7 +42,7 @@ import butterknife.BindView;
  * Created by Zen zenyagami@gmail.com on 07/04/2017.
  */
 
-public class ViewMapImpl extends MvpViewBaseActivity<PresenterViewMap> implements ViewMap, OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
+public class ViewMapImpl extends MvpViewBaseActivity<PresenterViewMap> implements ViewMap, OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraIdleListener, GoogleMap.OnCameraMoveListener {
     private MapView mMapView;
     @BindView(R.id.map_container)
     ViewGroup mMapContainer;
@@ -98,8 +100,29 @@ public class ViewMapImpl extends MvpViewBaseActivity<PresenterViewMap> implement
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.menu_show_cars:
+                clearMap();
+                item.setChecked(true);
+                mPresenter.showAllCars();
+                return true;
+            case R.id.menu_show_single:
+                item.setChecked(true);
+                clearMap();
+                showSingleList();
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSingleList() {
+        if(mGoogleMap==null)return;
+        mPresenter.showSingleCarList(mGoogleMap.getProjection().getVisibleRegion().latLngBounds);
+    }
+
+    @Override
+    public void clearMap() {
+        if(mGoogleMap!=null)
+            mGoogleMap.clear();
     }
 
     @Override
@@ -109,7 +132,9 @@ public class ViewMapImpl extends MvpViewBaseActivity<PresenterViewMap> implement
 
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.setOnMarkerClickListener(this);
-        mPresenter.onMapReady();
+
+        mPresenter.onMapReady(mGoogleMap.getProjection().getVisibleRegion().latLngBounds);
+
         //TODO change google fused location, seems myLocation not workin very welll.
        // Location location=mGoogleMap.getMyLocation();
         LatLng latLng =helperLocation.getBestLastKnowLocation();
@@ -123,6 +148,14 @@ public class ViewMapImpl extends MvpViewBaseActivity<PresenterViewMap> implement
         }
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_map,menu);
+        return true;
+    }
+
+
 
     private void zoomMap(LatLng location) {
         if(location==null)return;
@@ -221,6 +254,16 @@ public class ViewMapImpl extends MvpViewBaseActivity<PresenterViewMap> implement
 
     }
 
+    @Override
+    public void enableListeners() {
+        if(mGoogleMap!=null)
+        {
+            mGoogleMap.setOnCameraIdleListener(this);
+            mGoogleMap.setOnCameraMoveListener(this);
+        }
+
+    }
+
 
     @Override
     public boolean onMarkerClick(Marker marker) {
@@ -228,4 +271,18 @@ public class ViewMapImpl extends MvpViewBaseActivity<PresenterViewMap> implement
         return true;
     }
 
+    @Override
+    public void onCameraIdle() {
+        //when is iddle show only some markers...
+        if(mGoogleMap==null)return;
+        LatLngBounds bounds =mGoogleMap.getProjection().getVisibleRegion().latLngBounds;
+        mPresenter.showPartialCars(bounds);
+        //Toast.makeText(getApplicationContext(),"idle",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCameraMove() {
+        //Toast.makeText(getApplicationContext(),"move",Toast.LENGTH_SHORT).show();
+        //TODO rx debounce to avoid updating so fast  if the user moves the map a lot...
+    }
 }

@@ -5,4 +5,6 @@
     <string name="map">Map</string>
     <string name="permissions_denied">Location Permission denied.</string>
     <string name="map_api_key" translatable="false">x</string>
+    <string name="menu_show_all_cars">Show all cars</string>
+    <string name="menu_show_on_region">Show in map bounds</string>
 </resources>
