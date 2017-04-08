@@ -13,7 +13,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
-    //for possible continuous integration
+    //TODO for possible continuous integration we need add a flavour...
     signingConfigs {
         debug {
             storeFile file('../keys/debug.keystore')
@@ -21,6 +21,9 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 
     buildTypes {
